@@ -19,6 +19,7 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
+        Closed += MainWindow_Closed;
         InitializeComponent();
         // Redirect Console output to the UI textbox so Serilog Console sink appears in the TextBox
         Console.SetOut(new TextBoxWriter(LogTextBox));
