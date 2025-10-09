@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Azure Monitor" Width="120" Height="40" Margin="0,0,0,10" Click="AzureMonitorButton_Click"/>
+            <Button Content="SSO Web" Width="120" Height="40" Margin="0,0,0,10" Click="SsoWebButton_Click"/>
+            <Button Content="SSO WPF WAM" Width="120" Height="40" Margin="0,0,0,10" Click="SsoWpfWamButton_Click"/>
+            <Button Content="SSO WPF WebView2" Width="120" Height="40" Margin="0,0,0,10" Click="SsoWpfWebView2Button_Click"/>
+        </StackPanel>
     </Grid>
 </Window>

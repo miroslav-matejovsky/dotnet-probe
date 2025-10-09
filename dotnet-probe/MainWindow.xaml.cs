@@ -20,4 +20,27 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
+
+    private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
+    {
+        
+    }
+    
+    private void SsoWebButton_Click(object sender, RoutedEventArgs e)
+    {
+        // var poc1Window = new POC1Window();
+        // poc1Window.Show();
+    }
+
+    private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
+    {
+        // var poc1Window = new POC1Window();
+        // poc1Window.Show();
+    }
+
+    private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
+    {
+        // var poc2Window = new POC2Window();
+        // poc2Window.Show();
+    }
 }
