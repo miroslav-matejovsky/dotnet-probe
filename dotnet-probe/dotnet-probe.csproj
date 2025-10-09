@@ -15,17 +15,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="sso\SsoWebControl.xaml">
+      <Page Update="sso\WebControl.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
-      <Page Update="sso\SsoWpfWamControl.xaml">
+      <Page Update="sso\WpfWamControl.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
-      <Page Update="azure\AzureMonitorControl.xaml">
+      <Page Update="azure\MonitorControl.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>

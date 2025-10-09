@@ -27,25 +27,25 @@ public partial class MainWindow : Window
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("Azure Monitor button clicked");
-        DynamicContent.Content = new AzureMonitorControl();
+        DynamicContent.Content = new azure.MonitorControl();
     }
     
     private void SsoWebButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO Web button clicked");
-        DynamicContent.Content = new SsoWebControl();
+        DynamicContent.Content = new sso.WebControl();
     }
 
     private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO WPF WAM button clicked");
-        DynamicContent.Content = new SsoWpfWamControl();
+        DynamicContent.Content = new sso.WpfWamControl();
     }
 
     private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO WPF WebView2 button clicked");
-        DynamicContent.Content = new SsoWpfWebView2Control();
+        DynamicContent.Content = new sso.WpfWebView2Control();
     }
     
     private static void MainWindow_Closed(object? sender, EventArgs e)

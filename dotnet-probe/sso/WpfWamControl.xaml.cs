@@ -1,13 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace dotnet_probe;
+namespace dotnet_probe.sso;
 
 /// <summary>
 /// Interaction logic for SsoWpfWamControl.xaml
 /// </summary>
-public partial class SsoWpfWamControl : UserControl
+public partial class WpfWamControl : UserControl
 {
-    public SsoWpfWamControl()
+    public WpfWamControl()
     {
         InitializeComponent();
     }

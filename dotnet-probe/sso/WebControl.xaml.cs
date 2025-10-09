@@ -1,13 +1,13 @@
 ﻿using System.Windows.Controls;
 
-namespace dotnet_probe;
+namespace dotnet_probe.sso;
 
 /// <summary>
 /// Interaction logic for SsoWebControl.xaml
 /// </summary>
-public partial class SsoWebControl : UserControl
+public partial class WebControl : UserControl
 {
-    public SsoWebControl()
+    public WebControl()
     {
         InitializeComponent();
     }
