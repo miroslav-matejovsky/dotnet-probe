@@ -5,20 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotnet_probe"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="700" Width="1400">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel VerticalAlignment="Center" Grid.Column="0">
+        <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="0">
             <Button Content="Azure Monitor" Width="120" Height="40" Margin="0,0,0,10" Click="AzureMonitorButton_Click"/>
             <Button Content="SSO Web" Width="120" Height="40" Margin="0,0,0,10" Click="SsoWebButton_Click"/>
             <Button Content="SSO WPF WAM" Width="120" Height="40" Margin="0,0,0,10" Click="SsoWpfWamButton_Click"/>
             <Button Content="SSO WPF WebView2" Width="120" Height="40" Margin="0,0,0,10" Click="SsoWpfWebView2Button_Click"/>
         </StackPanel>
+        <ContentControl x:Name="DynamicContent" Grid.Row="0" Grid.Column="1" />
         <TextBox x:Name="LogTextBox"
-                 Grid.Column="1"
+                 Grid.Row="1"
+                 Grid.ColumnSpan="2"
                  IsReadOnly="True"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
