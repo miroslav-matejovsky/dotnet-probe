@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-probe", "dotnet-probe\dotnet-probe.csproj", "{6C09CA29-0AE1-4522-9C56-0A2500E3411E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp1", "WinFormsApp1\WinFormsApp1.csproj", "{2F07F5A7-F980-490B-9AE2-F080D12B7695}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp", "WinFormsApp\WinFormsApp.csproj", "{2F07F5A7-F980-490B-9AE2-F080D12B7695}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
