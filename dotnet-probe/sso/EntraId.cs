@@ -7,7 +7,8 @@ namespace dotnet_probe.sso;
 
 public static class EntraId
 {
-     private static async Task<AuthenticationResult?> AuthenticateUserViaMaw(Window window, string tenantId, string clientId)
+    public static async Task<AuthenticationResult?> AuthenticateUserViaMaw(Window window, string tenantId,
+        string clientId)
     {
         if (string.IsNullOrEmpty(clientId))
         {
@@ -21,13 +22,14 @@ public static class EntraId
         {
             Title = "SSO WPF Probe"
         };
-        
+
         var applicationOptions = new PublicClientApplicationOptions
         {
             TenantId = tenantId,
             ClientId = clientId
         };
 
+        Log.Information("Acquiring Window handle for authentication UI via WAM");
         var wih = new System.Windows.Interop.WindowInteropHelper(window);
         var hWnd = wih.Handle;
 
@@ -40,15 +42,15 @@ public static class EntraId
                 .Build();
 
         AuthenticationResult? result;
-
-        // Try to use the previously signed-in account from the cache
+        Log.Information("Trying to get previously signed-in user or use OS account for silent authentication");
         var accounts = await app.GetAccountsAsync();
         var existingAccount = accounts.FirstOrDefault();
         try
         {
             if (existingAccount != null)
             {
-                Log.Debug("Found existing account in cache: {Username}, {HomeAccountId}", existingAccount.Username, existingAccount.HomeAccountId);
+                Log.Debug("Found existing account in cache: {Username}, {HomeAccountId}", existingAccount.Username,
+                    existingAccount.HomeAccountId);
                 result = await app.AcquireTokenSilent(acquireScopes, existingAccount).ExecuteAsync();
             }
             // Next, try to sign in silently with the account that the user is signed into Windows

@@ -6,7 +6,9 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock Text="SSO WPF WAM POC" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="SSO WPF WAM POC" FontSize="24" Margin="0,0,0,20"/>
+            <Button Content="Login" Width="100" Height="40" Click="LoginButton_Click"/>
+        </StackPanel>
     </Grid>
 </UserControl>
-
