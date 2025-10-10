@@ -7,6 +7,7 @@ namespace dotnet_probe.tests.azure;
 public class AzureMonitorTests
 {
     
+    [Ignore("For exploratory testing only")]
     [Test]
     public void TestSendingData()
     {

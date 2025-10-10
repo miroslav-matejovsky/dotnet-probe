@@ -7,7 +7,10 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_LOG_LEVEL: DEBUG
     ports:
-      - "8080:8080"
+      - target: 8080    # container port
+        published: 8081 # host port
+        protocol: tcp
+        mode: host
     volumes:
       - ./data:/opt/keycloak/data/h2
       - ./logs:/opt/keycloak/logs

@@ -7,3 +7,9 @@ riderModule.iml
 *.sln.DotSettings.user
 
 appsettings.json
+
+# mounted keycloak volumes
+/keycloak/data/*
+!/keycloak/data/.gitkeep
+/keycloak/logs/*
+!keycloak/logs/.gitkeep
