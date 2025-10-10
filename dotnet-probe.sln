@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-probe", "dotnet-prob
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp", "WinFormsApp\WinFormsApp.csproj", "{2F07F5A7-F980-490B-9AE2-F080D12B7695}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-probe.tests", "dotnet-probe.tests\dotnet-probe.tests.csproj", "{472FB373-F407-42A0-939D-7A3BA4FC791E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{2F07F5A7-F980-490B-9AE2-F080D12B7695}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F07F5A7-F980-490B-9AE2-F080D12B7695}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F07F5A7-F980-490B-9AE2-F080D12B7695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{472FB373-F407-42A0-939D-7A3BA4FC791E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{472FB373-F407-42A0-939D-7A3BA4FC791E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{472FB373-F407-42A0-939D-7A3BA4FC791E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{472FB373-F407-42A0-939D-7A3BA4FC791E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

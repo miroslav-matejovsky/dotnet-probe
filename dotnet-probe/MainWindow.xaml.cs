@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("Azure Monitor button clicked");
-        DynamicContent.Content = new azure.MonitorControl();
+        DynamicContent.Content = new azure.AzureMonitorControl();
     }
     
     private void SsoWebButton_Click(object sender, RoutedEventArgs e)

@@ -8,9 +8,9 @@ namespace dotnet_probe.azure;
 /// <summary>
 /// Interaction logic for SsoWebControl.xaml
 /// </summary>
-public partial class MonitorControl : UserControl
+public partial class AzureMonitorControl : UserControl
 {
-    public MonitorControl()
+    public AzureMonitorControl()
     {
         InitializeComponent();
     }
@@ -26,9 +26,6 @@ public partial class MonitorControl : UserControl
             (Key4TextBox.Text, Value4TextBox.Text)
         };
 
-        var endpoint = new Uri("<data_collection_endpoint_uri>");
-        var credential = new DefaultAzureCredential();
-        var client = new LogsIngestionClient(endpoint, credential);
         
         foreach (var (key, value) in metrics)
         {
