@@ -9,14 +9,17 @@ namespace dotnet_probe.sso;
 /// </summary>
 public partial class WpfWamControl : UserControl
 {
-    public WpfWamControl()
+    private readonly ClientConfig _config;
+    
+    public WpfWamControl(ClientConfig config)
     {
+        _config = config;
         InitializeComponent();
     }
 
     private async void LoginButton_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("Login button clicked in WpfWamControl");
+        Log.Information("Using WAM to authenticate user for TenantId: {TenantId}, ClientId: {ClientId}", _config.TenantId, _config.ClientId);
         var parentWindow = Window.GetWindow(this);
         if (parentWindow == null)
         {
@@ -24,7 +27,7 @@ public partial class WpfWamControl : UserControl
             return;
         }
 
-        var result = await EntraId.AuthenticateUserViaMaw(parentWindow, "a", "a");
+        var result = await EntraId.AuthenticateUserViaMaw(parentWindow, _config.TenantId, _config.ClientId);
         if (result != null)
         {
             Log.Information("Authentication successful for {AccountUsername}", result.Account.Username);

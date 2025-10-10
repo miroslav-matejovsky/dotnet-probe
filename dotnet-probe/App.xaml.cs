@@ -12,8 +12,6 @@ namespace dotnet_probe;
 public partial class App : Application
 {
     
-    public static IConfiguration Config { get; private set; }
-
     // Configure Serilog to write to the console
     public App()
     {
@@ -23,9 +21,5 @@ public partial class App : Application
             .MinimumLevel.Debug()
             .WriteTo.Console(outputTemplate: template)
             .CreateLogger();
-        
-        Config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
     }
 }

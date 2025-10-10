@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using dotnet_probe.sso;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace dotnet_probe;
@@ -17,13 +19,28 @@ namespace dotnet_probe;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private readonly IConfiguration _config;
+    
     public MainWindow()
     {
         Closed += MainWindow_Closed;
         InitializeComponent();
         // Redirect Console output to the UI textbox so Serilog Console sink appears in the TextBox
         Console.SetOut(new TextBoxWriter(LogTextBox));
+        _config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+        
+        Log.Information("Application started with configuration {@Config}", _config.AsEnumerable());
     }
+    
+    private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
+    {
+        Log.Information("SSO WPF WAM button clicked");
+        var clientConfig = _config.GetRequiredSection("sso:wam").Get<ClientConfig>()!;
+        DynamicContent.Content = new sso.WpfWamControl(clientConfig);
+    }
+
 
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
@@ -36,13 +53,6 @@ public partial class MainWindow : Window
         Log.Information("SSO Web button clicked");
         DynamicContent.Content = new sso.WebControl();
     }
-
-    private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
-    {
-        Log.Information("SSO WPF WAM button clicked");
-        DynamicContent.Content = new sso.WpfWamControl();
-    }
-
     private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO WPF WebView2 button clicked");
