@@ -37,9 +37,6 @@
 <div id="status"></div>
 <textarea id="debugLog" readonly placeholder="Debug log..." aria-label="Debug log"></textarea>
 
-<p>To change keycloak settings run this program with<p>
-<code>./web.exe --Keycloak:Url &quot;your_url&quot; --Keycloak:Realm &quot;your_realm&quot; --Keycloak:ClientId &quot;your_client_id&quot;</code>
-<p>or set these env variables: Keycloak__Url, Keycloak__Realm, Keycloak__ClientId </p>
 <script type="module">
     import Keycloak from './js/keycloak-26.2.0.js';
 
@@ -279,7 +276,7 @@
     const logoutBtn = document.getElementById('logoutWithKeycloak');
 
     loginBtn.onclick = async () => {
-        log('Login button clicked');
+        log('Login button clicked. Waiting for Keycloak login...');
         try {
             await keycloak.login();
             log('Login success');
@@ -295,7 +292,7 @@
     };
 
     logoutBtn.onclick = async () => {
-        log('Logout clicked');
+        log('Logout clicked. Waiting for Keycloak logout...');
         try {
             await keycloak.logout();
             log('Logout triggered');

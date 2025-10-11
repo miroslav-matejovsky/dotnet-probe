@@ -18,9 +18,6 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -28,15 +25,9 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Key" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="5"/>
                 <TextBlock Text="Value" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="5"/>
-                <TextBox x:Name="Key1TextBox" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                <TextBox x:Name="Value1TextBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
-                <TextBox x:Name="Key2TextBox" Grid.Row="2" Grid.Column="0" Margin="5"/>
-                <TextBox x:Name="Value2TextBox" Grid.Row="2" Grid.Column="1" Margin="5"/>
-                <TextBox x:Name="Key3TextBox" Grid.Row="3" Grid.Column="0" Margin="5"/>
-                <TextBox x:Name="Value3TextBox" Grid.Row="3" Grid.Column="1" Margin="5"/>
-                <TextBox x:Name="Key4TextBox" Grid.Row="4" Grid.Column="0" Margin="5"/>
-                <TextBox x:Name="Value4TextBox" Grid.Row="4" Grid.Column="1" Margin="5"/>
-                <Button Content="SendMetrics" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Click="SendMetricsButton_Click" Margin="5"/>
+                <TextBox x:Name="KeyTextBox" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                <TextBox x:Name="ValueTextBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                <Button Content="Send" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="SendMetricsButton_Click" Margin="5"/>
             </Grid>
         </StackPanel>
     </Grid>
