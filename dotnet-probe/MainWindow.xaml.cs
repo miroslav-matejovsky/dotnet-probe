@@ -36,9 +36,15 @@ public partial class MainWindow : Window
     private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO WPF WAM button clicked");
-        var entraIdClientConfig = _config.GetRequiredSection("sso:wam").Get<sso.EntraIdClientConfig>()!;
-        var keycloakClientConfig = _config.GetRequiredSection("sso:keycloak").Get<sso.KeycloakClientConfig>()!;
-        DynamicContent.Content = new sso.WpfWamControl(entraIdClientConfig, keycloakClientConfig);
+        try
+        {
+            var entraIdClientConfig = _config.GetRequiredSection("sso:wam:entraId").Get<sso.EntraIdClientConfig>()!;
+            var keycloakClientConfig = _config.GetRequiredSection("sso:wam:keycloak").Get<sso.KeycloakClientConfig>()!;
+            DynamicContent.Content = new sso.WpfWamControl(entraIdClientConfig, keycloakClientConfig);
+        } catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading WPF WAM control with configuration {@Config}", _config.AsEnumerable());
+        }
     }
 
 

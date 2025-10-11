@@ -5,11 +5,7 @@ using Serilog;
 
 namespace dotnet_probe.sso;
 
-public class EntraIdClientConfig
-{
-    public string ClientId { get; set; } = string.Empty;
-    public string TenantId { get; set; } = string.Empty;
-}
+public record EntraIdClientConfig(string ClientId, string TenantId);
 
 public static class EntraId
 {

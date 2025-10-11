@@ -7,7 +7,8 @@ public record KeycloakClientConfig(
     string KeycloakUrl,
     string Realm,
     string ClientId,
-    string ClientSecret
+    string ClientSecret,
+    string EntraIdProvider
 )
 {
     public string TokenEndpoint => $"{KeycloakUrl}/realms/{Realm}/protocol/openid-connect/token";
@@ -41,7 +42,7 @@ public class Keycloak(KeycloakClientConfig config)
                 new("subject_token", subjectToken),
                 // new("subject_token_type", "urn:ietf:params:oauth:token-type:id_token"),
                 new("subject_token_type", "urn:ietf:params:oauth:token-type:access_token"),
-                new("subject_issues", "entraid-saml"),
+                new("subject_issues", config.EntraIdProvider),
                 // new("requested_token_type", "urn:ietf:params:oauth:token-type:id_token"),
                 new("client_id", clientId),
                 new("client_secret", clientSecret),
