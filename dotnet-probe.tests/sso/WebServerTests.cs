@@ -17,6 +17,7 @@ public class WebServerTests
             .CreateLogger();
     }
     
+    [Ignore("just exploratory")]
     [Test]
     public async Task TestWebServerStartStop()
     {

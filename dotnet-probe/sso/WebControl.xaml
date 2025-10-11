@@ -6,6 +6,12 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock Text="SSO Web POC" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="SSO Web POC" FontSize="24" Margin="0,0,0,20"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Start Server" Click="StartServer" Width="100" Margin="0,0,10,0"/>
+                <Button Content="Stop Server" Click="StopServer" Width="100"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </UserControl>
