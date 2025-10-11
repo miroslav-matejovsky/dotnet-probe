@@ -3,9 +3,19 @@ using Serilog;
 
 namespace dotnet_probe.sso;
 
-public static class Keycloak
+public record KeycloakClientConfig(
+    string KeycloakUrl,
+    string Realm,
+    string ClientId,
+    string ClientSecret
+)
 {
-    public static async Task<AuthenticationResult?> ExchangeTokenWithKeycloak(AuthenticationResult entraIdResult)
+    public string TokenEndpoint => $"{KeycloakUrl}/realms/{Realm}/protocol/openid-connect/token";
+}
+
+public class Keycloak(KeycloakClientConfig config)
+{
+    public async Task<AuthenticationResult?> TokenExchange(AuthenticationResult entraIdResult)
     {
         Log.Information("Starting token exchange with Keycloak");
         var subjectToken = entraIdResult.AccessToken;
@@ -16,27 +26,14 @@ public static class Keycloak
             return null;
         }
 
-        var keycloakEndpoint = Environment.GetEnvironmentVariable("KEYCLOAK_TOKEN_ENDPOINT")
-                               ?? "http://localhost:8080/realms/sso-probe/protocol/openid-connect/token";
-        var clientId = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID");
-        var clientSecret = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_SECRET");
-
-        if (string.IsNullOrEmpty(clientId))
-        {
-            Log.Error("Keycloak client id not configured (env KEYCLOAK_CLIENT_ID)");
-            return null;
-        }
-
-        if (string.IsNullOrEmpty(clientSecret))
-        {
-            Log.Error("Keycloak client secret not configured (env KEYCLOAK_CLIENT_SECRET)");
-            return null;
-        }
+        var tokenEndpoint = config.TokenEndpoint;
+        var clientId = config.ClientId;
+        var clientSecret = config.ClientSecret;
 
         try
         {
             using var http = new System.Net.Http.HttpClient();
-            Log.Information("Exchanging token with Keycloak at {Endpoint} for client {ClientId}", keycloakEndpoint,
+            Log.Information("Exchanging token with Keycloak at {Endpoint} for client {ClientId}", tokenEndpoint,
                 clientId);
             var form = new List<KeyValuePair<string, string>>
             {
@@ -52,8 +49,8 @@ public static class Keycloak
             };
 
             var content = new System.Net.Http.FormUrlEncodedContent(form);
-            Log.Debug("Posting token-exchange to Keycloak endpoint {Endpoint}", keycloakEndpoint);
-            var resp = await http.PostAsync(keycloakEndpoint, content);
+            Log.Debug("Posting token-exchange to Keycloak endpoint {Endpoint}", tokenEndpoint);
+            var resp = await http.PostAsync(tokenEndpoint, content);
             var body = await resp.Content.ReadAsStringAsync();
 
             if (!resp.IsSuccessStatusCode)
@@ -65,15 +62,15 @@ public static class Keycloak
             using var doc = System.Text.Json.JsonDocument.Parse(body);
             var root = doc.RootElement;
 
-            string? kcAccess =
+            var kcAccess =
                 root.TryGetProperty("access_token", out var at) && at.ValueKind == System.Text.Json.JsonValueKind.String
                     ? at.GetString()
                     : null;
-            string? kcIdToken =
+            var kcIdToken =
                 root.TryGetProperty("id_token", out var it) && it.ValueKind == System.Text.Json.JsonValueKind.String
                     ? it.GetString()
                     : null;
-            int expiresIn = 0;
+            var expiresIn = 0;
             if (root.TryGetProperty("expires_in", out var ei))
             {
                 if (ei.ValueKind == System.Text.Json.JsonValueKind.Number && ei.TryGetInt32(out var val))
@@ -86,7 +83,7 @@ public static class Keycloak
                 }
             }
 
-            string? scope =
+            var scope =
                 root.TryGetProperty("scope", out var sc) && sc.ValueKind == System.Text.Json.JsonValueKind.String
                     ? sc.GetString()
                     : null;

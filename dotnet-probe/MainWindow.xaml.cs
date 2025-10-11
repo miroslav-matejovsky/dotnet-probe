@@ -8,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using dotnet_probe.sso;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
@@ -20,7 +19,7 @@ namespace dotnet_probe;
 public partial class MainWindow : Window
 {
     private readonly IConfiguration _config;
-    
+
     public MainWindow()
     {
         Closed += MainWindow_Closed;
@@ -30,15 +29,16 @@ public partial class MainWindow : Window
         _config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
             .Build();
-        
+
         Log.Information("Application started with configuration {@Config}", _config.AsEnumerable());
     }
-    
+
     private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO WPF WAM button clicked");
-        var clientConfig = _config.GetRequiredSection("sso:wam").Get<ClientConfig>()!;
-        DynamicContent.Content = new sso.WpfWamControl(clientConfig);
+        var entraIdClientConfig = _config.GetRequiredSection("sso:wam").Get<sso.EntraIdClientConfig>()!;
+        var keycloakClientConfig = _config.GetRequiredSection("sso:keycloak").Get<sso.KeycloakClientConfig>()!;
+        DynamicContent.Content = new sso.WpfWamControl(entraIdClientConfig, keycloakClientConfig);
     }
 
 
@@ -47,18 +47,19 @@ public partial class MainWindow : Window
         Log.Information("Azure Monitor button clicked");
         DynamicContent.Content = new azure.AzureMonitorControl();
     }
-    
+
     private void SsoWebButton_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO Web button clicked");
         DynamicContent.Content = new sso.WebControl();
     }
+
     private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
     {
         Log.Information("SSO WPF WebView2 button clicked");
         DynamicContent.Content = new sso.WpfWebView2Control();
     }
-    
+
     private static void MainWindow_Closed(object? sender, EventArgs e)
     {
         Log.Information("Application closing");

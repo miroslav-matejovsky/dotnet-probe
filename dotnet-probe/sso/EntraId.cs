@@ -5,6 +5,12 @@ using Serilog;
 
 namespace dotnet_probe.sso;
 
+public class EntraIdClientConfig
+{
+    public string ClientId { get; set; } = string.Empty;
+    public string TenantId { get; set; } = string.Empty;
+}
+
 public static class EntraId
 {
     public static async Task<AuthenticationResult?> AuthenticateUserViaMaw(Window window, string tenantId,
