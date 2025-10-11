@@ -35,7 +35,6 @@ public partial class MainWindow : Window
 
     private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("SSO WPF WAM button clicked");
         try
         {
             var entraIdClientConfig = _config.GetRequiredSection("sso:wam:entraId").Get<sso.EntraIdClientConfig>()!;
@@ -50,19 +49,16 @@ public partial class MainWindow : Window
 
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("Azure Monitor button clicked");
         DynamicContent.Content = new azure.AzureMonitorControl();
     }
 
     private void SsoWebButton_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("SSO Web button clicked");
         DynamicContent.Content = new sso.WebControl();
     }
 
     private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("SSO WPF WebView2 button clicked");
         DynamicContent.Content = new sso.WpfWebView2Control();
     }
 

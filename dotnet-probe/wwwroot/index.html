@@ -1,0 +1,331 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login</title>
+    <style>
+        body { font-family: system-ui, Segoe UI, Arial, sans-serif; margin:20px; }
+        h1 { font-size:1.2rem; margin:0 0 1rem 0; }
+        button { padding:8px 14px; font-size:14px; cursor:pointer; }
+        #status { margin-top:12px; font-size:14px; }
+        #debugLog {
+            width: 100%;
+            height: 420px;         /* increased height */
+            min-height: 240px;     /* keep a sensible minimum */
+            max-height: 60vh;      /* responsive cap for smaller viewports */
+            margin-top: 20px;
+            font: 12px/1.4 Consolas, monospace;
+            padding: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+            background: #111;
+            color: #f2f2f2;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+        #controls { margin-top:8px; display:flex; gap:8px; }
+    </style>
+</head>
+<body>
+<h3>Keycloak Authentication</h3>
+<div id="controls">
+    <button id="loginWithKeycloak">Login</button>
+    <button id="logoutWithKeycloak">Logout</button>
+</div>
+
+<div id="status"></div>
+<textarea id="debugLog" readonly placeholder="Debug log..." aria-label="Debug log"></textarea>
+
+<p>To change keycloak settings run this program with<p>
+<code>./web.exe --Keycloak:Url &quot;your_url&quot; --Keycloak:Realm &quot;your_realm&quot; --Keycloak:ClientId &quot;your_client_id&quot;</code>
+<p>or set these env variables: Keycloak__Url, Keycloak__Realm, Keycloak__ClientId </p>
+<script type="module">
+    import Keycloak from './js/keycloak-26.2.0.js';
+
+    // --- Minimal logging ---
+    const logBox = document.getElementById('debugLog');
+    function log(...parts) {
+        const time = new Date().toISOString().slice(11,23); // HH:MM:SS.mmm (UTC)
+        const line = `[${time}] ` + parts.map(p => format(p)).join(' ');
+        logBox.value += line + '\n';
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+    // Network logger - place right after the existing `log(...)` function
+    (function () {
+        const maskAuth = true;             // set to false to include raw Authorization headers
+        const maxBodyLength = 2000;        // truncate long bodies
+
+        function trunc(s) {
+            if (s == null) return s;
+            return (s.length > maxBodyLength) ? s.slice(0, maxBodyLength) + '...[truncated]' : s;
+        }
+
+        function maskHeaderValue(name, value) {
+            if (!value) return value;
+            if (maskAuth && name.toLowerCase() === 'authorization') {
+                return value.startsWith('Bearer ') ? 'Bearer [REDACTED]' : '[REDACTED]';
+            }
+            return value;
+        }
+
+        function headersToObject(headers) {
+            const obj = {};
+            try {
+                if (headers && typeof headers.forEach === 'function') {
+                    headers.forEach((v, k) => obj[k] = maskHeaderValue(k, v));
+                } else if (headers && typeof headers === 'string') {
+                    headers.split('\r\n').forEach(line => {
+                        const i = line.indexOf(':');
+                        if (i > 0) obj[line.slice(0, i).trim().toLowerCase()] = maskHeaderValue(line.slice(0, i).trim(), line.slice(i+1).trim());
+                    });
+                }
+            } catch {}
+            return obj;
+        }
+
+        // Wrap fetch
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = async function(input, init) {
+            try {
+                const method = (init && init.method) || (input && input.method) || 'GET';
+                const url = (typeof input === 'string') ? input : (input && input.url) || '';
+                // Try to read request headers/body
+                let reqHeaders = {};
+                if (input && input.headers) reqHeaders = headersToObject(input.headers);
+                if (init && init.headers) reqHeaders = Object.assign(reqHeaders, headersToObject(new Headers(init.headers)));
+                let reqBody = null;
+                try {
+                    if (typeof input !== 'string' && input instanceof Request) {
+                        const clone = input.clone();
+                        reqBody = await clone.text().catch(() => null);
+                    } else if (init && init.body) {
+                        reqBody = (typeof init.body === 'string') ? init.body : JSON.stringify(init.body);
+                    }
+                } catch {}
+                log('NET >>>', method, url, { headers: reqHeaders, body: trunc(reqBody) });
+
+                const response = await originalFetch(input, init);
+                const cloned = response.clone();
+                let resText = null;
+                try { resText = await cloned.text(); } catch {}
+                const resHeaders = headersToObject(cloned.headers);
+                log('NET <<<', response.status, response.statusText, url, { headers: resHeaders, body: trunc(resText) });
+
+                return response;
+            } catch (e) {
+                log('NET ERROR (fetch)', e);
+                // fallback to original to avoid breaking app
+                return originalFetch(input, init);
+            }
+        };
+
+        // Wrap XMLHttpRequest
+        const XHR = window.XMLHttpRequest;
+        function WrappedXHR() {
+            const xhr = new XHR();
+            let method = null, url = null, reqHeaders = {};
+
+            const origOpen = xhr.open;
+            xhr.open = function(m, u, ...rest) {
+                method = m;
+                url = u;
+                return origOpen.call(xhr, m, u, ...rest);
+            };
+
+            const origSetRequestHeader = xhr.setRequestHeader;
+            xhr.setRequestHeader = function(k, v) {
+                reqHeaders[k.toLowerCase()] = maskHeaderValue(k, v);
+                return origSetRequestHeader.call(xhr, k, v);
+            };
+
+            const origSend = xhr.send;
+            xhr.send = function(body) {
+                try {
+                    log('NET >>>', method, url, { headers: reqHeaders, body: trunc((typeof body === 'string') ? body : (body ? '[non-string body]' : null)) });
+                } catch {}
+                return origSend.call(xhr, body);
+            };
+
+            xhr.addEventListener('readystatechange', function () {
+                try {
+                    if (xhr.readyState === 4) {
+                        const rawHeaders = xhr.getAllResponseHeaders();
+                        const resHeaders = headersToObject(rawHeaders);
+                        const resBody = (() => {
+                            try { return xhr.responseText; } catch { return null; }
+                        })();
+                        log('NET <<<', xhr.status, xhr.statusText, url, { headers: resHeaders, body: trunc(resBody) });
+                    }
+                } catch (e) {
+                    log('NET ERROR (XHR readystate)', e);
+                }
+            });
+
+            return xhr;
+        }
+        WrappedXHR.UNSENT = XHR.UNSENT;
+        WrappedXHR.OPENED = XHR.OPENED;
+        WrappedXHR.HEADERS_RECEIVED = XHR.HEADERS_RECEIVED;
+        WrappedXHR.LOADING = XHR.LOADING;
+        WrappedXHR.DONE = XHR.DONE;
+
+        window.XMLHttpRequest = WrappedXHR;
+        log('Network logger installed (fetch + XHR). Authorization masked:', maskAuth);
+    })();
+    
+
+    // Base64url decode helper
+    function base64UrlDecode(str) {
+        if (!str) return null;
+        str = str.replace(/-/g, '+').replace(/_/g, '/');
+        while (str.length % 4) str += '=';
+        try {
+            const binary = atob(str);
+            // Preserve UTF-8 properly
+            return decodeURIComponent(Array.prototype.map.call(binary, c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        } catch {
+            return null;
+        }
+    }
+
+    // Parse JWT into { header, payload, signature }
+    function parseJwt(token) {
+        const jwtRegex = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+        if (!jwtRegex.test(token)) throw new Error('Not a JWT');
+        const parts = token.split('.');
+        const headerJson = base64UrlDecode(parts[0]) || '{}';
+        const payloadJson = base64UrlDecode(parts[1]) || '{}';
+        let header, payload;
+        try { header = JSON.parse(headerJson); } catch { header = headerJson; }
+        try { payload = JSON.parse(payloadJson); } catch { payload = payloadJson; }
+        return { header, payload, signature: parts[2] };
+    }
+
+    function format(v) {
+        if (v instanceof Error) return v.message;
+        if (typeof v === 'object') { try { return JSON.stringify(v); } catch { return '[object]'; } }
+        if (typeof v === 'string') {
+            // detect JWT and pretty-print decoded JSON
+            const jwtRegex = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+            if (jwtRegex.test(v)) {
+                try {
+                    const parsed = parseJwt(v);
+                    return '\n' + JSON.stringify(parsed, null, 2);
+                } catch {
+                    // fall through to return raw string
+                }
+            }
+        }
+        return String(v);
+    }
+
+    // --- Load Keycloak config from localhost endpoint ---
+    async function loadKeycloakConfig() {
+        try {
+            const configUrl = new URL('config', window.location.href).toString();
+            const res = await fetch(configUrl, { cache: 'no-store' });
+            if (!res.ok) throw new Error(`Config fetch failed: ${res.status}`);
+            const cfg = await res.json();
+            log('Loaded Keycloak config from', configUrl, cfg);
+            return cfg;
+        } catch (e) {
+            log('Failed to load config', e);
+            return null;
+        }
+    }
+
+    const cfg = await loadKeycloakConfig();
+    if (!cfg) {
+        log('Keycloak configuration not available on /config path. Initialization stopped.');
+        document.getElementById('status').textContent = 'Configuration error. See debug log.';
+        throw new Error('Missing Keycloak configuration');
+    }
+    if (!cfg.url || !cfg.realm || !cfg.clientId) {
+        log('Keycloak configuration is incomplete:', cfg);
+        document.getElementById('status').textContent = 'Configuration error. See debug log.';
+        throw new Error('Incomplete Keycloak configuration');
+    }
+
+    // proceed only when cfg is present
+    const keycloak = new Keycloak({
+        url: cfg.url,
+        realm: cfg.realm,
+        clientId: cfg.clientId
+    });
+
+    log('Keycloak instance created.');
+
+    try {
+        log('Initializing Keycloak...');
+        const authenticated = await keycloak.init();
+        if (authenticated) {
+            log('User is authenticated');
+            // Print available JWTs to the debug log (access token and id token)
+            const accessToken = keycloak.token ?? null;
+            const idToken = keycloak.idToken ?? null;
+            if (accessToken) log('Access Token (JWT):', accessToken);
+            if (idToken) log('ID Token (JWT):', idToken);
+            document.getElementById('status').textContent = 'Authenticated';
+        } else {
+            log('User is not authenticated');
+        }} catch (error) {
+        log('Failed to initialize adapter:', error);
+    }
+
+    const loginBtn = document.getElementById('loginWithKeycloak');
+    const logoutBtn = document.getElementById('logoutWithKeycloak');
+
+    loginBtn.onclick = async () => {
+        log('Login button clicked');
+        try {
+            await keycloak.login();
+            log('Login success');
+            const accessToken = keycloak.token ?? null;
+            const idToken = keycloak.idToken ?? null;
+            if (accessToken) log('Access Token (JWT):', accessToken);
+            if (idToken) log('ID Token (JWT):', idToken);
+            document.getElementById('status').textContent = 'Authenticated';
+        } catch (err) {
+            log('Login failed', err);
+            document.getElementById('status').textContent = 'Login failed';
+        }
+    };
+
+    logoutBtn.onclick = async () => {
+        log('Logout clicked');
+        try {
+            await keycloak.logout();
+            log('Logout triggered');
+            document.getElementById('status').textContent = 'Logged out';
+        } catch (e) {
+            log('Logout failed', e);
+        }
+    };
+
+    // Basic handlers (optional)
+    keycloak.onAuthSuccess = () => {
+        log('onAuthSuccess');
+        const accessToken = keycloak.token ?? null;
+        const idToken = keycloak.idToken ?? null;
+        if (accessToken) log('Access Token (JWT):', accessToken);
+        if (idToken) log('ID Token (JWT):', idToken);
+    };
+    keycloak.onAuthError = e => log('onAuthError', e);
+    keycloak.onAuthLogout = () => {
+        log('onAuthLogout');
+        document.getElementById('status').textContent = 'Logged out';
+    };
+    keycloak.onTokenExpired = () => {
+        log('Token expired -> attempting refresh');
+        keycloak.updateToken(30).then(r => log('Refresh done. Refreshed=', r)).catch(e => log('Refresh failed', e));
+    };
+
+    // Expose for quick console debugging
+    window._kc = keycloak;
+    window._log = log;
+</script>
+</body>
+</html>

@@ -17,6 +17,7 @@ public partial class WpfWamControl : UserControl
         _entraIdClientConfig = entraIdClientConfig;
         _keycloakClientConfig = keycloakClientConfig;
         InitializeComponent();
+        Log.Information("WPF WAM Control initialized with EntraIdClientConfig: {@EntraIdClientConfig} and KeycloakClientConfig: {@KeycloakClientConfig}", entraIdClientConfig, keycloakClientConfig);
     }
 
     private async void LoginButton_Click(object sender, RoutedEventArgs e)

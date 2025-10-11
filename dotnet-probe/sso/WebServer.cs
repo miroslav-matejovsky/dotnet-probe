@@ -1,0 +1,47 @@
+﻿using Serilog;
+
+namespace dotnet_probe.sso;
+
+public record WebServerConfig(string Urls);
+
+public class WebServer(WebServerConfig config) : IAsyncDisposable
+{
+    private WebApplication? _app;
+    
+    public async Task Start()
+    {
+        var args = new[] { "--urls", config.Urls };
+        var options = new WebApplicationOptions
+        {
+            ContentRootPath = AppContext.BaseDirectory,
+            WebRootPath = "wwwroot",
+            Args = args
+        };
+        var builder = WebApplication.CreateBuilder(options);
+        // builder.Services.Configure<KeycloakOptions>(builder.Configuration.GetSection("Keycloak"));
+
+        builder.Services.AddSerilog(dispose: true);
+        _app = builder.Build();
+        _app.UseDefaultFiles();
+        _app.UseStaticFiles();
+        _app.UseRouting();
+
+        await _app.StartAsync(); 
+    }
+    
+    public async Task Stop(CancellationToken token)
+    {
+        if (_app != null)
+        {
+            await _app.StopAsync(token);
+        }
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        var token = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
+        await Stop(token);
+    }
+
+}
