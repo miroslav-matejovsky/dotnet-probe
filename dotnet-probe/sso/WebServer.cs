@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace dotnet_probe.sso;
 
@@ -25,6 +26,13 @@ public class WebServer(WebServerConfig config) : IAsyncDisposable
         _app.UseDefaultFiles();
         _app.UseStaticFiles();
         _app.UseRouting();
+        _app.MapGet("/config", (IOptions<KeycloakOptions> opts) => Results.Json(new
+        {
+            url = opts.Value.Url,
+            realm = opts.Value.Realm,
+            clientId = opts.Value.ClientId
+        }));
+
 
         await _app.StartAsync(); 
     }

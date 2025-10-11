@@ -39,7 +39,7 @@ public partial class WpfWamControl : UserControl
         }
         Log.Information("Authentication successful for {AccountUsername}", result.Account.Username);
         var keycloak = new Keycloak(_keycloakClientConfig);
-        Log.Information("Exchanging token with Keycloak at {KeycloakUrl} for client {KeycloakClientId}", _keycloakClientConfig.KeycloakUrl, _keycloakClientConfig.ClientId);
+        Log.Information("Exchanging token with Keycloak at {Url} for client {ClientId}", _keycloakClientConfig.Url, _keycloakClientConfig.ClientId);
         result = await keycloak.TokenExchange(result);
         if (result == null)
         {

@@ -4,14 +4,14 @@ using Serilog;
 namespace dotnet_probe.sso;
 
 public record KeycloakClientConfig(
-    string KeycloakUrl,
+    string Url,
     string Realm,
     string ClientId,
     string ClientSecret,
     string EntraIdProvider
 )
 {
-    public string TokenEndpoint => $"{KeycloakUrl}/realms/{Realm}/protocol/openid-connect/token";
+    public string TokenEndpoint => $"{Url}/realms/{Realm}/protocol/openid-connect/token";
 }
 
 public class Keycloak(KeycloakClientConfig config)
