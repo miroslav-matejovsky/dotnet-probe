@@ -9,18 +9,22 @@ namespace dotnet_probe.sso;
 /// </summary>
 public partial class WebControl : UserControl
 {
-    public WebControl()
+    private readonly WebServer _webServer;
+    public WebControl(WebServerConfig config)
     {
         InitializeComponent();
+        _webServer = new WebServer(config);
     }
 
-    private void StartServer(object sender, RoutedEventArgs e)
+    private async void StartServer(object sender, RoutedEventArgs e)
     {
         Log.Information("Starting web server...");
+        await _webServer.Start();
     }
 
-    private void StopServer(object sender, RoutedEventArgs e)
+    private async void StopServer(object sender, RoutedEventArgs e)
     {
         Log.Information("Stopping web server...");
+        await _webServer.Stop();
     }
 }

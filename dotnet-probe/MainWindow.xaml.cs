@@ -40,22 +40,31 @@ public partial class MainWindow : Window
             var entraIdClientConfig = _config.GetRequiredSection("sso:wam:entraId").Get<sso.EntraIdClientConfig>()!;
             var keycloakClientConfig = _config.GetRequiredSection("sso:wam:keycloak").Get<sso.KeycloakClientConfig>()!;
             DynamicContent.Content = new sso.WpfWamControl(entraIdClientConfig, keycloakClientConfig);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             Log.Error(ex, "Error loading WPF WAM control with configuration {@Config}", _config.AsEnumerable());
         }
     }
 
+    private void SsoWebButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var config = _config.GetRequiredSection("sso:web").Get<sso.WebServerConfig>()!;
+            DynamicContent.Content = new sso.WebControl(config);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading SSO Web control with configuration {@Config}", _config.AsEnumerable());
+        }
+    }
 
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
         DynamicContent.Content = new azure.AzureMonitorControl();
     }
 
-    private void SsoWebButton_Click(object sender, RoutedEventArgs e)
-    {
-        DynamicContent.Content = new sso.WebControl();
-    }
 
     private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
     {

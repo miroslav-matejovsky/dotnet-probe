@@ -2,7 +2,7 @@
 
 namespace dotnet_probe.sso;
 
-public record WebServerConfig(string Urls);
+public record WebServerConfig(string Url);
 
 public class WebServer(WebServerConfig config) : IAsyncDisposable
 {
@@ -10,7 +10,7 @@ public class WebServer(WebServerConfig config) : IAsyncDisposable
     
     public async Task Start()
     {
-        var args = new[] { "--urls", config.Urls };
+        var args = new[] { "--urls", config.Url };
         var options = new WebApplicationOptions
         {
             ContentRootPath = AppContext.BaseDirectory,
@@ -29,10 +29,11 @@ public class WebServer(WebServerConfig config) : IAsyncDisposable
         await _app.StartAsync(); 
     }
     
-    public async Task Stop(CancellationToken token)
+    public async Task Stop()
     {
         if (_app != null)
         {
+            var token = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
             await _app.StopAsync(token);
         }
     }
@@ -40,8 +41,7 @@ public class WebServer(WebServerConfig config) : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
-        var token = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
-        await Stop(token);
+        await Stop();
     }
 
 }

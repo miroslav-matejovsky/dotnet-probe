@@ -22,12 +22,6 @@
         <PackageReference Include="Serilog.AspNetCore" Version="9.0.0"/>
     </ItemGroup>
 
-<!--    <ItemGroup>-->
-<!--        <Content Include="appsettings.json">-->
-<!--            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
-<!--        </Content>-->
-<!--    </ItemGroup>-->
-
     <ItemGroup>
         <Page Update="sso\WebControl.xaml">
             <Generator>MSBuild:Compile</Generator>
@@ -44,6 +38,15 @@
             <XamlRuntime>Wpf</XamlRuntime>
             <SubType>Designer</SubType>
         </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="wwwroot\js\keycloak-26.2.0.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\index.html">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>
