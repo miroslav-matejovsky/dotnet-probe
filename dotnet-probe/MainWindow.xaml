@@ -13,10 +13,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="0">
-            <Button Content="SSO WPF WAM" Width="120" Height="40" Margin="0,0,10,0" Click="SsoWpfWamButton_Click"/>
-            <Button Content="SSO Web" Width="120" Height="40" Margin="0,0,10,0" Click="SsoWebButton_Click"/>
-            <Button Content="SSO WPF WebView2" Width="120" Height="40" Margin="0,0,10,0" Click="SsoWpfWebView2Button_Click"/>
-            <Button Content="Azure Monitor" Width="120" Height="40" Margin="0,0,10,0" Click="AzureMonitorButton_Click"/>
+            <ToggleButton x:Name="SsoWpfWamToggle" Content="SSO WPF WAM" Width="120" Height="40" Margin="0,0,10,0" Click="SsoWpfWamButton_Click"/>
+            <ToggleButton x:Name="SsoWebToggle" Content="SSO Web" Width="120" Height="40" Margin="0,0,10,0" Click="SsoWebButton_Click"/>
+            <ToggleButton x:Name="SsoWpfWebView2Toggle" Content="SSO WPF WebView2" Width="120" Height="40" Margin="0,0,10,0" Click="SsoWpfWebView2Button_Click"/>
+            <ToggleButton x:Name="AzureMonitorToggle" Content="Azure Monitor" Width="120" Height="40" Margin="0,0,10,0" Click="AzureMonitorButton_Click"/>
         </StackPanel>
         <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1">
             <ContentControl x:Name="DynamicContent" />
