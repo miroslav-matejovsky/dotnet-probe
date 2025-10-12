@@ -32,15 +32,15 @@ public class Keycloak(KeycloakClientConfig config)
             var form = new List<KeyValuePair<string, string>>
             {
                 new("grant_type", "password"),
+                new("subject_issuer", config.EntraIdProvider),
                 new("username", username),
                 new("password", password),
                 new("client_id", clientId),
                 new("client_secret", clientSecret),
-                new("scope", "openid"),
+                // new("scope", "openid"),
             };
 
             var content = new System.Net.Http.FormUrlEncodedContent(form);
-            Log.Debug("Posting password grant to Keycloak endpoint {Endpoint}", tokenEndpoint);
             var resp = await http.PostAsync(tokenEndpoint, content);
             var body = await resp.Content.ReadAsStringAsync();
 
@@ -120,13 +120,14 @@ public class Keycloak(KeycloakClientConfig config)
             {
                 new("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"),
                 new("subject_token", subjectToken),
-                // new("subject_token_type", "urn:ietf:params:oauth:token-type:id_token"),
+                // new("subject_token_type", "urn:ietf:params:oauth:token-type:jwt"),
                 new("subject_token_type", "urn:ietf:params:oauth:token-type:access_token"),
-                new("subject_issues", config.EntraIdProvider),
+                new("subject_issuer", config.EntraIdProvider),
                 new("requested_token_type", "urn:ietf:params:oauth:token-type:id_token"),
                 new("client_id", clientId),
                 new("client_secret", clientSecret),
-                new("scope", "openid"),
+                new("audience", "target-client")
+                // new("scope", "openid"),
             };
 
             var content = new System.Net.Http.FormUrlEncodedContent(form);
