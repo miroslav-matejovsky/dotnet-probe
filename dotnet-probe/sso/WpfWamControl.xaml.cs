@@ -48,4 +48,12 @@ public partial class WpfWamControl : UserControl
         }
         Log.Information("Token exchange successful. New token for {AccountUsername}", result.Account.Username);
     }
+
+    private void LoginWithCredentialsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var username = UsernameTextBox.Text;
+        var password = PasswordBox.Password;
+        Log.Information("Login with credentials attempted for username: {Username}", username);
+        // TODO: Implement authentication logic
+    }
 }

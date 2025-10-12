@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock Text="SSO WPF WebView2 POC" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
+        <TextBlock Text="Not yet implemented" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"/>
     </Grid>
 </UserControl>
 
