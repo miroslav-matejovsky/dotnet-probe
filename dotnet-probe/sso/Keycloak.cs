@@ -18,9 +18,81 @@ public class Keycloak(KeycloakClientConfig config)
 {
 
     // https://www.keycloak.org/securing-apps/oidc-layers#_resource_owner_password_credentials_flow
-    public async Task<AuthenticationResult> LoginUser(string username, string password)
+    public async Task<string> LoginUser(string username, string password)
     {
-        return null;
+        Log.Information("Starting password login with Keycloak for username: {Username}", username);
+        var tokenEndpoint = config.TokenEndpoint;
+        var clientId = config.ClientId;
+        var clientSecret = config.ClientSecret;
+
+        try
+        {
+            using var http = new System.Net.Http.HttpClient();
+            Log.Information("Posting password grant to Keycloak at {Endpoint} for client {ClientId}", tokenEndpoint, clientId);
+            var form = new List<KeyValuePair<string, string>>
+            {
+                new("grant_type", "password"),
+                new("username", username),
+                new("password", password),
+                new("client_id", clientId),
+                new("client_secret", clientSecret),
+                new("scope", "openid"),
+            };
+
+            var content = new System.Net.Http.FormUrlEncodedContent(form);
+            Log.Debug("Posting password grant to Keycloak endpoint {Endpoint}", tokenEndpoint);
+            var resp = await http.PostAsync(tokenEndpoint, content);
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                Log.Error("Keycloak password login failed ({Status}): {Body}", (int)resp.StatusCode, body);
+                return null;
+            }
+
+            using var doc = System.Text.Json.JsonDocument.Parse(body);
+            var root = doc.RootElement;
+
+            var kcAccess =
+                root.TryGetProperty("access_token", out var at) && at.ValueKind == System.Text.Json.JsonValueKind.String
+                    ? at.GetString()
+                    : null;
+            var kcIdToken =
+                root.TryGetProperty("id_token", out var it) && it.ValueKind == System.Text.Json.JsonValueKind.String
+                    ? it.GetString()
+                    : null;
+            var expiresIn = 0;
+            if (root.TryGetProperty("expires_in", out var ei))
+            {
+                if (ei.ValueKind == System.Text.Json.JsonValueKind.Number && ei.TryGetInt32(out var val))
+                {
+                    expiresIn = val;
+                }
+                else
+                {
+                    int.TryParse(ei.GetString(), out expiresIn);
+                }
+            }
+
+            var scope =
+                root.TryGetProperty("scope", out var sc) && sc.ValueKind == System.Text.Json.JsonValueKind.String
+                    ? sc.GetString()
+                    : null;
+
+            Log.Information(
+                "Keycloak password login succeeded. AccessTokenLength: {Len}, HasIdToken: {HasId}, ExpiresIn: {Expires}, Scope: {Scope}",
+                kcAccess?.Length ?? 0, !string.IsNullOrEmpty(kcIdToken), expiresIn, scope ?? "(none)");
+
+
+            // Note: MSAL's AuthenticationResult cannot be constructed here;
+            // return just received body after performing the login.
+            return body;
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Exception during Keycloak password login: {Error}", ex.Message);
+            return null;
+        }
     }
     
     // https://www.keycloak.org/securing-apps/token-exchange#_external-token-to-internal-token-exchange
