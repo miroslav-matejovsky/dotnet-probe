@@ -16,6 +16,14 @@ public record KeycloakClientConfig(
 
 public class Keycloak(KeycloakClientConfig config)
 {
+
+    // https://www.keycloak.org/securing-apps/oidc-layers#_resource_owner_password_credentials_flow
+    public async Task<AuthenticationResult> LoginUser(string username, string password)
+    {
+        return null;
+    }
+    
+    // https://www.keycloak.org/securing-apps/token-exchange#_external-token-to-internal-token-exchange
     public async Task<AuthenticationResult?> TokenExchange(AuthenticationResult entraIdResult)
     {
         Log.Information("Starting token exchange with Keycloak");

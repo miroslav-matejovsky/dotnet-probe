@@ -22,7 +22,12 @@ public class WebServerTests
     public async Task TestWebServerStartStop()
     {
         const string urls = "http://localhost:5000";
-        var config = new WebServerConfig(urls);
+        var keycloakConfig = new WebServerKeycloakConfig(
+            Url: "not-important-here-url",
+            Realm: "not-important-here-realm",
+            ClientId: "not-important-here-client-id"
+        );
+        var config = new WebServerConfig(urls, keycloakConfig);
         var webServer = new WebServer(config);
         var task = webServer.Start();
         // This is a placeholder test. Implement actual web server start/stop logic here.
@@ -34,7 +39,7 @@ public class WebServerTests
         var response = await client.GetAsync(urls);
         Assert.That(response.IsSuccessStatusCode, Is.True, "Server should respond successfully.");
         
-        await webServer.Stop(CancellationToken.None);
+        await webServer.Stop();
         await task;
     }
 }

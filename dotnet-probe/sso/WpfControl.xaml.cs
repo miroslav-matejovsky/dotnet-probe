@@ -7,12 +7,12 @@ namespace dotnet_probe.sso;
 /// <summary>
 /// Interaction logic for SsoWpfWamControl.xaml
 /// </summary>
-public partial class WpfWamControl : UserControl
+public partial class WpfControl : UserControl
 {
     private readonly EntraIdClientConfig _entraIdClientConfig;
     private readonly KeycloakClientConfig _keycloakClientConfig;
     
-    public WpfWamControl(EntraIdClientConfig entraIdClientConfig, KeycloakClientConfig keycloakClientConfig)
+    public WpfControl(EntraIdClientConfig entraIdClientConfig, KeycloakClientConfig keycloakClientConfig)
     {
         _entraIdClientConfig = entraIdClientConfig;
         _keycloakClientConfig = keycloakClientConfig;

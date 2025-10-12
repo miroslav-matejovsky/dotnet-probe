@@ -39,7 +39,7 @@ public partial class MainWindow : Window
         {
             var entraIdClientConfig = _config.GetRequiredSection("sso:wam:entraId").Get<sso.EntraIdClientConfig>()!;
             var keycloakClientConfig = _config.GetRequiredSection("sso:wam:keycloak").Get<sso.KeycloakClientConfig>()!;
-            DynamicContent.Content = new sso.WpfWamControl(entraIdClientConfig, keycloakClientConfig);
+            DynamicContent.Content = new sso.WpfControl(entraIdClientConfig, keycloakClientConfig);
             SsoWpfWamToggle.IsChecked = true;
             SsoWebToggle.IsChecked = false;
             SsoWpfWebView2Toggle.IsChecked = false;
