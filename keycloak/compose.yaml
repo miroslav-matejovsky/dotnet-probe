@@ -8,7 +8,7 @@ services:
       KC_LOG_LEVEL: DEBUG
     ports:
       - target: 8080    # container port
-        published: 8081 # host port
+        published: 8080 # host port
         protocol: tcp
         mode: host
     volumes:

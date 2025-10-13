@@ -40,11 +40,10 @@ public partial class WpfControl : UserControl
 
         }
         Log.Information("Authentication successful for {AccountUsername}", result.Account.Username);
-        Log.Information("Exchanging token with Keycloak at {Url} for client {ClientId}", _keycloakClientConfig.Url, _keycloakClientConfig.ClientId);
-        result = await _keycloak.TokenExchange(result);
-        if (result == null)
+        var kcToken = await _keycloak.TokenExchange(result);
+        if (kcToken == null)
         {
-            Log.Warning("Token exchange failed");
+            Log.Error("Token exchange failed");
             return;
         }
         Log.Information("Token exchange successful. New token for {AccountUsername}", result.Account.Username);

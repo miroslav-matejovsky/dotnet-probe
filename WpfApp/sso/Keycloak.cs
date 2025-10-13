@@ -1,4 +1,5 @@
-﻿using Microsoft.Identity.Client;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Identity.Client;
 using Serilog;
 
 namespace dotnet_probe.sso;
@@ -96,9 +97,14 @@ public class Keycloak(KeycloakClientConfig config)
     }
     
     // https://www.keycloak.org/securing-apps/token-exchange#_external-token-to-internal-token-exchange
-    public async Task<AuthenticationResult?> TokenExchange(AuthenticationResult entraIdResult)
+    public async Task<JwtSecurityToken?> TokenExchange(AuthenticationResult entraIdResult)
     {
-        Log.Information("Starting token exchange with Keycloak");
+        var tokenEndpoint = config.TokenEndpoint;
+        var clientId = config.ClientId;
+        var clientSecret = config.ClientSecret;
+
+        Log.Information("Starting token exchange with Keycloak at {Endpoint} for client {ClientId}", tokenEndpoint,
+            clientId);
         var subjectToken = entraIdResult.AccessToken;
         // var subjectToken = entraIdResult.IdToken;
         if (string.IsNullOrEmpty(subjectToken))
@@ -106,10 +112,6 @@ public class Keycloak(KeycloakClientConfig config)
             Log.Error("No EntraId access token available for exchange");
             return null;
         }
-
-        var tokenEndpoint = config.TokenEndpoint;
-        var clientId = config.ClientId;
-        var clientSecret = config.ClientSecret;
 
         try
         {
@@ -122,11 +124,11 @@ public class Keycloak(KeycloakClientConfig config)
                 new("subject_token", subjectToken),
                 // new("subject_token_type", "urn:ietf:params:oauth:token-type:jwt"),
                 new("subject_token_type", "urn:ietf:params:oauth:token-type:access_token"),
+                // new("requested_token_type", "urn:ietf:params:oauth:token-type:id_token"),
                 new("subject_issuer", config.EntraIdProvider),
-                new("requested_token_type", "urn:ietf:params:oauth:token-type:id_token"),
                 new("client_id", clientId),
                 new("client_secret", clientSecret),
-                new("audience", "target-client")
+                // new("audience", config.ClientId),
                 // new("scope", "openid"),
             };
 
@@ -134,13 +136,13 @@ public class Keycloak(KeycloakClientConfig config)
             Log.Debug("Posting token-exchange to Keycloak endpoint {Endpoint}", tokenEndpoint);
             var resp = await http.PostAsync(tokenEndpoint, content);
             var body = await resp.Content.ReadAsStringAsync();
-
+            
             if (!resp.IsSuccessStatusCode)
             {
                 Log.Error("Keycloak token exchange failed ({Status}): {Body}", (int)resp.StatusCode, body);
                 return null;
             }
-
+            
             using var doc = System.Text.Json.JsonDocument.Parse(body);
             var root = doc.RootElement;
 
@@ -174,9 +176,13 @@ public class Keycloak(KeycloakClientConfig config)
                 "Keycloak exchange succeeded. AccessTokenLength: {Len}, HasIdToken: {HasId}, ExpiresIn: {Expires}, Scope: {Scope}",
                 kcAccess?.Length ?? 0, !string.IsNullOrEmpty(kcIdToken), expiresIn, scope ?? "(none)");
 
-
-            // Note: MSAL's AuthenticationResult cannot be constructed here; return null after performing the exchange.
-            return null;
+            
+            var token = new JwtSecurityToken(kcAccess);
+            Log.Information("JWT Issuer: {Issuer}", token.Issuer);
+            Log.Information("JWT Subject: {Subject}", token.Subject);
+            Log.Information("JWT Expires: {Expires}", token.ValidTo);
+            Log.Information("JWT Claims: {Claims}", string.Join(", ", token.Claims.Select(c => $"{c.Type}: {c.Value}")));
+            return token;
         }
         catch (Exception ex)
         {
