@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\dotnet-probe\dotnet-probe.csproj" />
+      <ProjectReference Include="..\WpfApp\WpfApp.csproj" />
     </ItemGroup>
 
 </Project>
