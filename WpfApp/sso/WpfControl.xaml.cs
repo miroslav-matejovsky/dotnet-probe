@@ -46,7 +46,7 @@ public partial class WpfControl : UserControl
             Log.Error("Token exchange failed");
             return;
         }
-        Log.Information("Token exchange successful. New token for {AccountUsername}", result.Account.Username);
+        Log.Information("Token exchange successful. New token for {AccountUsername} received from Keycloak.", result.Account.Username);
     }
 
     private async void LoginWithCredentialsButton_Click(object sender, RoutedEventArgs e)
