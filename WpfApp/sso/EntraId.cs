@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Windows;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Broker;
 using Serilog;
@@ -82,6 +83,15 @@ public static class EntraId
         {
             Log.Error("Authentication failed: {Error}", ex.Message);
             return null;
+        }
+        
+        if (result != null)
+        {
+            var token = new JwtSecurityToken(result.AccessToken);
+            Log.Information("JWT Issuer: {Issuer}", token.Issuer);
+            Log.Information("JWT Subject: {Subject}", token.Subject);
+            Log.Information("JWT Expires: {Expires}", token.ValidTo);
+            Log.Information("JWT Claims: {Claims}", string.Join(", ", token.Claims.Select(c => $"{c.Type}: {c.Value}")));
         }
 
         return result;

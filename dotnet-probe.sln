@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "WpfApp\WpfApp.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp", "WinFormsApp\WinFormsApp.csproj", "{2F07F5A7-F980-490B-9AE2-F080D12B7695}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApfApp.Tests", "ApfApp.Tests\ApfApp.Tests.csproj", "{472FB373-F407-42A0-939D-7A3BA4FC791E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp.Tests", "WpfApp.Tests\WpfApp.Tests.csproj", "{472FB373-F407-42A0-939D-7A3BA4FC791E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{C17DB3D3-989B-46B2-B2AA-27CC7664DD7B}"
 EndProject
