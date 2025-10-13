@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Windows.Controls;
 using Azure.Identity;
 using Azure.Monitor.Ingestion;
 using Serilog;
@@ -6,7 +7,7 @@ using Serilog;
 namespace dotnet_probe.azure;
 
 /// <summary>
-/// Interaction logic for SsoWebControl.xaml
+/// Interaction logic for AzureMonitorControl.xaml
 /// </summary>
 public partial class AzureMonitorControl : UserControl
 {
@@ -20,12 +21,8 @@ public partial class AzureMonitorControl : UserControl
         // TODO: Implement sending metrics to Azure Monitor
         var metrics = new List<(string Key, string Value)>
         {
-            (Key1TextBox.Text, Value1TextBox.Text),
-            (Key2TextBox.Text, Value2TextBox.Text),
-            (Key3TextBox.Text, Value3TextBox.Text),
-            (Key4TextBox.Text, Value4TextBox.Text)
+            (KeyTextBox.Text, ValueTextBox.Text)
         };
-
         
         foreach (var (key, value) in metrics)
         {

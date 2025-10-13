@@ -10,11 +10,20 @@ WPF app for trying out various scenarios in .NET.
 
 ## Keycloak Setup
 
-Start keycloak using Podman or Docker using `podman compose up` or `docker compose up`.
+Start keycloak using Podman or Docker by `cd` into the `keycloak` directory and
+using `podman compose up` or `docker compose up`.
 
 1. In Keycloak, create a new realm named `sso-probe`.
 2. On realm settings -> User Profile remove first name and last name required attributes. (This is optional but simplifies user creation.)
 3. Create test user in the `sso-probe` realm for example, username: `test`, password: `test`.
+
+### Create Client for WPF app
+
+- In the `sso-probe` realm, go to Clients and create a new client.
+- Name it `dotnet-wpf-probe`.
+- Client authentication muse be enable to support `Standard Token Echange`.
+- `Direct Access Grants` must be enabled
+- `Standard Token Exchange` must be enabled
 
 ### Entra ID OpenID Connect Identity Provider
 

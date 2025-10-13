@@ -35,37 +35,45 @@ public partial class MainWindow : Window
 
     private void SsoWpfWamButton_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("SSO WPF WAM button clicked");
         try
         {
             var entraIdClientConfig = _config.GetRequiredSection("sso:wam:entraId").Get<sso.EntraIdClientConfig>()!;
             var keycloakClientConfig = _config.GetRequiredSection("sso:wam:keycloak").Get<sso.KeycloakClientConfig>()!;
-            DynamicContent.Content = new sso.WpfWamControl(entraIdClientConfig, keycloakClientConfig);
-        } catch (Exception ex)
+            DynamicContent.Content = new sso.WpfControl(entraIdClientConfig, keycloakClientConfig);
+            SsoWpfWamToggle.IsChecked = true;
+            SsoWebToggle.IsChecked = false;
+            AzureMonitorToggle.IsChecked = false;
+        }
+        catch (Exception ex)
         {
             Log.Error(ex, "Error loading WPF WAM control with configuration {@Config}", _config.AsEnumerable());
         }
     }
 
+    private void SsoWebButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var config = _config.GetRequiredSection("sso:web").Get<sso.WebServerConfig>()!;
+            DynamicContent.Content = new sso.WebControl(config);
+            SsoWpfWamToggle.IsChecked = false;
+            SsoWebToggle.IsChecked = true;
+            AzureMonitorToggle.IsChecked = false;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading SSO Web control with configuration {@Config}", _config.AsEnumerable());
+        }
+    }
 
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
-        Log.Information("Azure Monitor button clicked");
         DynamicContent.Content = new azure.AzureMonitorControl();
+        SsoWpfWamToggle.IsChecked = false;
+        SsoWebToggle.IsChecked = false;
+        AzureMonitorToggle.IsChecked = true;
     }
-
-    private void SsoWebButton_Click(object sender, RoutedEventArgs e)
-    {
-        Log.Information("SSO Web button clicked");
-        DynamicContent.Content = new sso.WebControl();
-    }
-
-    private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
-    {
-        Log.Information("SSO WPF WebView2 button clicked");
-        DynamicContent.Content = new sso.WpfWebView2Control();
-    }
-
+    
     private static void MainWindow_Closed(object? sender, EventArgs e)
     {
         Log.Information("Application closing");

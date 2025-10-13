@@ -1,4 +1,4 @@
-﻿namespace WinFormsApp1;
+namespace WinFormsApp;
 
 using System;
 using System.Drawing;
