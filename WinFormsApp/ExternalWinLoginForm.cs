@@ -1,8 +1,8 @@
-namespace WinFormsApp1;
+namespace WinFormsApp;
 
-public partial class Form1 : Form
+public partial class ExternalWinLoginForm : Form
 {
-    public Form1()
+    public ExternalWinLoginForm()
     {
         InitializeComponent();
     }

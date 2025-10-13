@@ -42,7 +42,6 @@ public partial class MainWindow : Window
             DynamicContent.Content = new sso.WpfControl(entraIdClientConfig, keycloakClientConfig);
             SsoWpfWamToggle.IsChecked = true;
             SsoWebToggle.IsChecked = false;
-            SsoWpfWebView2Toggle.IsChecked = false;
             AzureMonitorToggle.IsChecked = false;
         }
         catch (Exception ex)
@@ -59,7 +58,6 @@ public partial class MainWindow : Window
             DynamicContent.Content = new sso.WebControl(config);
             SsoWpfWamToggle.IsChecked = false;
             SsoWebToggle.IsChecked = true;
-            SsoWpfWebView2Toggle.IsChecked = false;
             AzureMonitorToggle.IsChecked = false;
         }
         catch (Exception ex)
@@ -73,20 +71,9 @@ public partial class MainWindow : Window
         DynamicContent.Content = new azure.AzureMonitorControl();
         SsoWpfWamToggle.IsChecked = false;
         SsoWebToggle.IsChecked = false;
-        SsoWpfWebView2Toggle.IsChecked = false;
         AzureMonitorToggle.IsChecked = true;
     }
-
-
-    private void SsoWpfWebView2Button_Click(object sender, RoutedEventArgs e)
-    {
-        DynamicContent.Content = new sso.WpfWebView2Control();
-        SsoWpfWamToggle.IsChecked = false;
-        SsoWebToggle.IsChecked = false;
-        SsoWpfWebView2Toggle.IsChecked = true;
-        AzureMonitorToggle.IsChecked = false;
-    }
-
+    
     private static void MainWindow_Closed(object? sender, EventArgs e)
     {
         Log.Information("Application closing");

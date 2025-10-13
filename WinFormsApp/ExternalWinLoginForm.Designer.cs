@@ -1,6 +1,6 @@
-﻿namespace WinFormsApp1;
+﻿namespace WinFormsApp;
 
-partial class Form1
+partial class ExternalWinLoginForm
 {
     /// <summary>
     ///  Required designer variable.
