@@ -4,7 +4,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>CoreA</RootNamespace>
+        <RootNamespace>Core</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Azure.Identity" Version="1.17.0"/>
+        <PackageReference Include="Azure.Monitor.Ingestion" Version="1.2.0"/>
+    </ItemGroup>
 </Project>

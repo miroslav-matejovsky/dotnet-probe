@@ -1,7 +1,13 @@
 ﻿using Azure.Identity;
 using Azure.Monitor.Ingestion;
 
-namespace dotnet_probe.azure;
+namespace Core.azure;
+
+public record AzureMonitorConfig(
+    string DataCollectionEndpointUri,
+    string RuleId,
+    string StreamName
+);
 
 public class AzureMonitor
 {
