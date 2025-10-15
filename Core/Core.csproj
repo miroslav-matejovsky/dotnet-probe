@@ -12,4 +12,8 @@
         <PackageReference Include="Azure.Monitor.Ingestion" Version="1.2.0"/>
         <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.3.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="azure\" />
+    </ItemGroup>
 </Project>
