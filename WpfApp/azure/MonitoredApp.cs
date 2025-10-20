@@ -1,11 +1,14 @@
-﻿using OpenTelemetry.Metrics;
+﻿using Azure.Monitor.OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 
 namespace dotnet_probe.azure;
 
-public class MonitoredApp
+public record AzureMonitorConfig(string ConnectionString);
+
+public class MonitoredApp(AzureMonitorConfig config) : IAsyncDisposable
 {
     private WebApplication? _app;
     private const string ServiceName = "mirmat-probe-monitored-app";
@@ -22,16 +25,22 @@ public class MonitoredApp
             .WithTracing(tracing => tracing
                 .AddSource(ServiceName)
                 .AddAspNetCoreInstrumentation()
-                .AddConsoleExporter())
+                .AddConsoleExporter()
+                .AddAzureMonitorTraceExporter(options =>
+                    options.ConnectionString = config.ConnectionString
+                ))
             .WithMetrics(metrics => metrics
                 .AddMeter(ServiceName)
-                .AddConsoleExporter());
-        
+                .AddConsoleExporter()
+                .AddAzureMonitorMetricExporter(options =>
+                    options.ConnectionString = config.ConnectionString
+                ));
+
         _app = builder.Build();
         _app.UseRouting();
         _app.Map("/health", () => "OK");
         _app.Map("/", () => "Hello from monitored app!");
-        
+
         Log.Information("Starting monitored app...");
         await _app.StartAsync();
         Log.Information("Monitored app started.");

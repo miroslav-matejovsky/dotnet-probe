@@ -13,10 +13,10 @@ public partial class AzureMonitorControl : UserControl
 {
     private readonly MonitoredApp _app;
 
-    public AzureMonitorControl()
+    public AzureMonitorControl(AzureMonitorConfig config)
     {
         InitializeComponent();
-        _app = new MonitoredApp();
+        _app = new MonitoredApp(config);
     }
 
     private async void StartAppButton_Click(object sender, System.Windows.RoutedEventArgs e)
