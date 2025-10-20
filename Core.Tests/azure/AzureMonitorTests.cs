@@ -6,11 +6,13 @@ using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace Core.Tests.azure;
 
 public record AzureMonitorConfig(
+    string MetricsConnectionString,
     string DataCollectionEndpointUri,
     string RuleId,
     string StreamName
@@ -19,7 +21,7 @@ public record AzureMonitorConfig(
 [TestFixture]
 public class AzureMonitorTests
 {
-    private static readonly AzureMonitorConfig _config;
+    private static readonly AzureMonitorConfig Config;
 
     static AzureMonitorTests()
     {
@@ -27,26 +29,28 @@ public class AzureMonitorTests
         var json = File.ReadAllText(configPath);
         var config = JsonSerializer.Deserialize<AzureMonitorConfig>(json);
         Assert.That(config, Is.Not.Null);
-        _config = config!;
+        Config = config!;
     }
 
     [Ignore("For exploratory testing only")]
     [Test]
-    public void TestSendingMetrics()
+    public async Task TestSendingMetrics()
     {
-        var metricsProvider = Sdk.CreateMeterProviderBuilder()
+        using var metricsProvider = Sdk.CreateMeterProviderBuilder()
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(
+                serviceName: "mirmat-local-probe",
+                serviceVersion: "0.1.0"))
+            // .AddConsoleExporter()
             .AddAzureMonitorMetricExporter(options =>
             {
-                options.ConnectionString = "<Your Connection String>";
-                options.StorageDirectory = "C:\\SomeDirectory";
+                options.ConnectionString = Config.MetricsConnectionString;
+                options.StorageDirectory = TestContext.CurrentContext.WorkDirectory + "\\AzureMonitorMetrics";
+                options.SamplingRatio = 1.0f;
             })
+            .AddAspNetCoreInstrumentation()
             .Build();
-        // var monitor = new AzureMonitor();
-        // monitor.SendMetrics(new List<(string, string)>
-        // {
-        // ("AppMetric1", "15.3"),
-        // ("AppMetric2", "23.5")
-        // });
+        
+        await Task.Delay(10_000);
     }
 
 
@@ -66,7 +70,7 @@ public class AzureMonitorTests
             });
         });
         var credential = new DefaultAzureCredential();
-        var endpoint = new Uri(_config.DataCollectionEndpointUri);
+        var endpoint = new Uri(Config.DataCollectionEndpointUri);
         var client = new LogsIngestionClient(endpoint, credential);
         DateTimeOffset currentTime = DateTimeOffset.UtcNow;
     }
