@@ -10,6 +10,7 @@ namespace dotnet_probe.sso;
 public partial class WebControl : UserControl
 {
     private readonly WebServer _webServer;
+    
     public WebControl(WebServerConfig config)
     {
         InitializeComponent();

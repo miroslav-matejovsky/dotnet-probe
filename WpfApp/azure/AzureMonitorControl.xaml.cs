@@ -11,25 +11,21 @@ namespace dotnet_probe.azure;
 /// </summary>
 public partial class AzureMonitorControl : UserControl
 {
+    private readonly MonitoredApp _app;
+
     public AzureMonitorControl()
     {
         InitializeComponent();
+        _app = new MonitoredApp();
     }
 
-    private void SendMetricsButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    private async void StartAppButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        // TODO: Implement sending metrics to Azure Monitor
-        var metrics = new List<(string Key, string Value)>
-        {
-            (KeyTextBox.Text, ValueTextBox.Text)
-        };
-        
-        foreach (var (key, value) in metrics)
-        {
-            if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
-            {
-                Log.Information("Sending metric: {Key} = {Value}", key, value);
-            }
-        }
+        await _app.Start();
+    }
+    
+    private async void StopAppButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        await _app.Stop();
     }
 }
