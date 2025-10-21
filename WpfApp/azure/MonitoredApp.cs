@@ -7,14 +7,18 @@ namespace dotnet_probe.azure;
 
 public record AzureMonitorConfig(string ConnectionString);
 
-public class MonitoredApp(string serviceName, AzureMonitorConfig config) : IAsyncDisposable
+public class MonitoredApp(string serviceName, int port, AzureMonitorConfig config) : IAsyncDisposable
 {
     private WebApplication? _app;
-    
+
     public async Task Start()
     {
         Log.Information("Preparing monitored app...");
-        var builder = WebApplication.CreateBuilder();
+
+        var args = new[] { "--urls", $"http://localhost:{port}" };
+        var options = new WebApplicationOptions { Args = args };
+
+        var builder = WebApplication.CreateBuilder(options);
         builder.Services.AddSerilog(dispose: true);
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(
@@ -28,17 +32,17 @@ public class MonitoredApp(string serviceName, AzureMonitorConfig config) : IAsyn
                 .AddPrometheusExporter()
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
-                .AddAzureMonitorMetricExporter(options =>
-                    options.ConnectionString = config.ConnectionString
+                .AddAzureMonitorMetricExporter(metricOptions =>
+                    metricOptions.ConnectionString = config.ConnectionString
                 ));
-            // .WithTracing(tracing => tracing
-            //     // .AddSource(ServiceName)
-            //     .AddAspNetCoreInstrumentation()
-            //     .AddHttpClientInstrumentation()
-            //     .AddConsoleExporter()
-            //     .AddAzureMonitorTraceExporter(options =>
-            //         options.ConnectionString = config.ConnectionString
-            //     ));
+        // .WithTracing(tracing => tracing
+        //     // .AddSource(ServiceName)
+        //     .AddAspNetCoreInstrumentation()
+        //     .AddHttpClientInstrumentation()
+        //     .AddConsoleExporter()
+        //     .AddAzureMonitorTraceExporter(options =>
+        //         options.ConnectionString = config.ConnectionString
+        //     ));
 
         _app = builder.Build();
         _app.UseOpenTelemetryPrometheusScrapingEndpoint();
@@ -58,6 +62,7 @@ public class MonitoredApp(string serviceName, AzureMonitorConfig config) : IAsyn
         {
             var token = new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token;
             await _app.StopAsync(token);
+            await _app.DisposeAsync();
         }
     }
 

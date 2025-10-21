@@ -13,21 +13,26 @@ public partial class AzureMonitorControl : UserControl
 {
     private const string ServiceName = "mirmat-probe-monitored-app";
 
-    private readonly MonitoredApp _app;
+    private readonly AzureMonitorConfig _config;
+    private MonitoredApp? _app;
 
     public AzureMonitorControl(AzureMonitorConfig config)
     {
+        _config = config;
         InitializeComponent();
-        _app = new MonitoredApp(ServiceName, config);
     }
 
     private async void StartAppButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
+        _app = new MonitoredApp(ServiceName, 5000, _config);
         await _app.Start();
     }
     
     private async void StopAppButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        await _app.Stop();
+        if (_app != null)
+        {
+            await _app.Stop();
+        }
     }
 }
