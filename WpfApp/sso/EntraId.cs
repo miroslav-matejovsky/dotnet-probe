@@ -2,6 +2,7 @@
 using System.Windows;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Broker;
+using Microsoft.Identity.Client.Extensions.Msal;
 using Serilog;
 
 namespace dotnet_probe.sso;
@@ -44,6 +45,13 @@ public static class EntraId
                 .WithBroker(brokerOptions)
                 .Build();
 
+        // Configure persistent cache
+        var storageProperties = new StorageCreationPropertiesBuilder("sso-probe-msal.cache", MsalCacheHelper.UserRootDirectory)
+            .Build();
+        Log.Information("Using up persistent cache at {CachePath}", storageProperties.CacheFilePath);
+        var cacheHelper = await MsalCacheHelper.CreateAsync(storageProperties);
+        cacheHelper.RegisterCache(app.UserTokenCache);
+        
         AuthenticationResult? result;
         Log.Information("Trying to get previously signed-in user or use OS account for silent authentication");
         var accounts = await app.GetAccountsAsync();

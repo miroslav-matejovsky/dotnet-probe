@@ -6,29 +6,12 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Azure Monitor POC" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Grid.Row="0"/>
-        <StackPanel Grid.Row="1" Margin="10">
-            <Label Content="Metrics" HorizontalAlignment="Center" FontSize="18"/>
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Key" Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="5"/>
-                <TextBlock Text="Value" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="5"/>
-                <TextBox x:Name="KeyTextBox" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                <TextBox x:Name="ValueTextBox" Grid.Row="1" Grid.Column="1" Margin="5"/>
-                <Button Content="Send" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Click="SendMetricsButton_Click" Margin="5"/>
-            </Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox x:Name="ServiceCountTextBox" Width="50" Margin="0,0,10,0" VerticalContentAlignment="Center" Text="1"/>
+                <Button Content="Start Services" Click="StartServicesButton_Click" Width="100" Margin="0,0,10,0"/>
+                <Button Content="Stop Services" Click="StopServicesButton_Click" Width="100"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

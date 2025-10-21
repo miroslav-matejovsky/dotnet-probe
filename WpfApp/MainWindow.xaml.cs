@@ -68,12 +68,13 @@ public partial class MainWindow : Window
 
     private void AzureMonitorButton_Click(object sender, RoutedEventArgs e)
     {
-        DynamicContent.Content = new azure.AzureMonitorControl();
+        var config = _config.GetRequiredSection("azure:monitor").Get<azure.AzureMonitorConfig>()!;
+        DynamicContent.Content = new azure.AzureMonitorControl(config);
         SsoWpfWamToggle.IsChecked = false;
         SsoWebToggle.IsChecked = false;
         AzureMonitorToggle.IsChecked = true;
     }
-    
+
     private static void MainWindow_Closed(object? sender, EventArgs e)
     {
         Log.Information("Application closing");

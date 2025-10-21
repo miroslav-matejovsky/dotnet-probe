@@ -11,25 +11,42 @@ namespace dotnet_probe.azure;
 /// </summary>
 public partial class AzureMonitorControl : UserControl
 {
-    public AzureMonitorControl()
+    private readonly AzureMonitorConfig _config;
+    private readonly List<MonitoredService> _services = [];
+
+    public AzureMonitorControl(AzureMonitorConfig config)
     {
+        _config = config;
         InitializeComponent();
     }
 
-    private void SendMetricsButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    private async void StartServicesButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-        // TODO: Implement sending metrics to Azure Monitor
-        var metrics = new List<(string Key, string Value)>
+        var numberOfServices = int.Parse(ServiceCountTextBox.Text);
+        Log.Information("Starting {NumberOfServices} monitored services", numberOfServices);
+        // Create monitored services
+        for (var i = 0; i < numberOfServices; i++)
         {
-            (KeyTextBox.Text, ValueTextBox.Text)
-        };
-        
-        foreach (var (key, value) in metrics)
-        {
-            if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
-            {
-                Log.Information("Sending metric: {Key} = {Value}", key, value);
-            }
+            var app = new MonitoredService(i, _config);
+            _services.Add(app);
         }
+        // Start all services asynchronously
+        var startTasks = _services.Select(app => app.Start()).ToList();
+        Log.Information("Starting all monitored services...");
+        try
+        {
+            await Task.WhenAll(startTasks);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error starting monitored services");
+        }
+        Log.Information("All monitored services started");
+    }
+
+    private async void StopServicesButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var stopTasks = _services.Select(app => app.Stop()).ToList();
+        await Task.WhenAll(stopTasks);
     }
 }

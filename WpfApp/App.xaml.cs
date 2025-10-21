@@ -18,6 +18,8 @@ public partial class App : Application
         // Configure Serilog to write to the console
         const string template = "{Timestamp:HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("System.Net.Http", Serilog.Events.LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.Extensions.Http", Serilog.Events.LogEventLevel.Warning)
             .MinimumLevel.Debug()
             .WriteTo.Console(outputTemplate: template)
             .CreateLogger();

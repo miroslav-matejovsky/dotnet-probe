@@ -13,3 +13,6 @@ appsettings.json
 !/keycloak/data/.gitkeep
 /keycloak/logs/*
 !keycloak/logs/.gitkeep
+
+# for local testing
+local.config.json

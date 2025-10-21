@@ -73,3 +73,14 @@ TODO: can it be just App Registration instead of Enterprise Application?
   "TODO": "Add SAML config here"
 }
 ```
+
+
+#### Mapping SAML Attributes to Keycloak Attributes
+
+First you will probably find some identifier like `nvkg76k9bg5iij54ejw9hlxi5txr8ruw1jb6bthnzkm` mapped from EntraId on Update Account Keycloak page.
+Search this identifier in the keycloak debug logs and you should find SAML xml response where you can find received claims.
+
+Then, create a new mapper in the `entraid-saml` identity provider:
+
+1. username: `http://schemas.microsoft.com/identity/claims/displayname`
+2. email: `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name`
