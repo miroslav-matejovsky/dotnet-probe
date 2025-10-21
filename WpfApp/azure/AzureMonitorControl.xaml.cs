@@ -11,12 +11,14 @@ namespace dotnet_probe.azure;
 /// </summary>
 public partial class AzureMonitorControl : UserControl
 {
+    private const string ServiceName = "mirmat-probe-monitored-app";
+
     private readonly MonitoredApp _app;
 
     public AzureMonitorControl(AzureMonitorConfig config)
     {
         InitializeComponent();
-        _app = new MonitoredApp(config);
+        _app = new MonitoredApp(ServiceName, config);
     }
 
     private async void StartAppButton_Click(object sender, System.Windows.RoutedEventArgs e)
